@@ -4,13 +4,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is an Android application called "trippath" built with Kotlin and Jetpack Compose. The project uses Gradle with Kotlin DSL for build configuration and follows modern Android development practices.
+TripPath is an Android application built using Clean Architecture with multi-module structure. The project follows a layered approach with separate modules for domain, data, presentation, and the main app.
+
 
 - **Package**: `com.tpkits.trippath`
-- **Min SDK**: 28, **Target SDK**: 35
+- **Min SDK**: 28, **Target SDK**: 34
 - **Build System**: Gradle with Kotlin DSL
 - **UI Framework**: Jetpack Compose with Material3
 - **Language**: Kotlin with JVM target 11
+- **Testing Frameworks**: JUnit for unit tests, Espresso for UI tests
+- **Architecture**: Clean architecture with modularization
+- **Network**: Uses Ktor for HTTP requests
+- **logging**: Uses logger for logging
 
 ## Common Commands
 
@@ -31,7 +36,6 @@ This is an Android application called "trippath" built with Kotlin and Jetpack C
 - `./gradlew lintDebug` - Run lint on debug variant
 - `./gradlew lintFix` - Run lint and apply safe fixes
 - `./gradlew check` - Run all checks (lint + tests)
-
 ### Installation Commands
 - `./gradlew installDebug` - Install debug APK on connected device
 - `./gradlew uninstallDebug` - Uninstall debug APK
@@ -41,12 +45,12 @@ This is an Android application called "trippath" built with Kotlin and Jetpack C
 ### Project Structure
 - **Root module**: Contains Gradle configuration and project-level settings
 - **App module** (`/app`): Main application module containing:
-  - `MainActivity.kt`: Entry point using Compose with edge-to-edge display
-  - UI theme system in `ui/theme/` with Material3 theming
-  - Standard Android resource structure (`res/`)
-  - Clean architecture with separation of concerns
-  - 'data', 'domain', and 'presentation' layers
-  - feature based modularization
+    - `MainActivity.kt`: Entry point using Compose with edge-to-edge display
+    - UI theme system in `ui/theme/` with Material3 theming
+    - Standard Android resource structure (`res/`)
+    - Clean architecture with separation of concerns
+    - 'data', 'domain', and 'presentation' layers
+    - feature based modularization
 
 ### Key Configuration Files
 - `build.gradle.kts` (root): Project-level Gradle configuration
@@ -57,7 +61,7 @@ This is an Android application called "trippath" built with Kotlin and Jetpack C
 ### Dependencies
 The project uses a version catalog system (`libs.versions.toml`) for dependency management. Key dependencies include:
 - AndroidX Core KTX
-- Lifecycle Runtime KTX  
+- Lifecycle Runtime KTX
 - Activity Compose
 - Compose BOM for UI components
 - Material3 for theming
