@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.tpkits.trippath"
-    compileSdk = 35
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.tpkits.trippath"
