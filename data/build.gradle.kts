@@ -88,4 +88,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // DataStore
+    implementation(libs.datastore.preferences)
+    implementation(libs.security.crypto)
 }

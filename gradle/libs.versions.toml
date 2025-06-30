@@ -23,6 +23,8 @@ googleId = "1.1.1"
 hilt = "2.51.1"
 ksp = "2.0.0-1.0.24"
 logger = "2.2.0"
+datastore = "1.1.1"
+security-crypto = "1.1.0-alpha06"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -74,6 +76,11 @@ hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-com
 # Logger
 logger = { group = "com.orhanobut", name = "logger", version.ref = "logger" }
 
+# DataStore
+datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
+security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "security-crypto" }
+
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
@@ -84,4 +91,7 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+
+
+
 
