@@ -1,6 +1,7 @@
 package com.tpkits.data.impl
 
 import android.content.Context
+import com.tpkits.data.local.TokenManager
 import com.tpkits.data.service.GoogleAuthService
 import com.tpkits.domain.model.AuthResult
 import com.tpkits.domain.model.User
@@ -8,13 +9,15 @@ import com.tpkits.domain.repository.AuthRepository
 import com.tpkits.data.model.UserEntity
 import com.tpkits.data.model.toDomain
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val googleAuthService: GoogleAuthService
+    private val googleAuthService: GoogleAuthService,
+    private val tokenManager: TokenManager
 ): AuthRepository {
     
     private var currentUser: User? = null
@@ -80,6 +83,7 @@ class AuthRepositoryImpl @Inject constructor(
             val success = googleAuthService.signOut()
             if (success) {
                 currentUser = null
+                tokenManager.clearTokens()
                 AuthResult.Success(Unit)
             } else {
                 AuthResult.Error(
@@ -100,6 +104,7 @@ class AuthRepositoryImpl @Inject constructor(
             val success = googleAuthService.revokeAccess()
             if (success) {
                 currentUser = null
+                tokenManager.clearTokens()
                 AuthResult.Success(Unit)
             } else {
                 AuthResult.Error(
@@ -113,5 +118,25 @@ class AuthRepositoryImpl @Inject constructor(
                 message = "계정 삭제 중 오류가 발생했습니다: ${e.message}"
             )
         }
+    }
+    
+    override suspend fun saveTokens(accessToken: String, refreshToken: String) {
+        tokenManager.saveTokens(accessToken, refreshToken)
+    }
+    
+    override suspend fun getAccessToken(): String? {
+        return tokenManager.getAccessToken()
+    }
+    
+    override suspend fun getRefreshToken(): String? {
+        return tokenManager.getRefreshToken()
+    }
+    
+    override suspend fun clearTokens() {
+        tokenManager.clearTokens()
+    }
+    
+    override fun isTokenValid(): Flow<Boolean> {
+        return tokenManager.isTokenValid()
     }
 }
