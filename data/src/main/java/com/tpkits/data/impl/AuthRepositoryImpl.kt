@@ -19,9 +19,9 @@ class AuthRepositoryImpl @Inject constructor(
     
     private var currentUser: User? = null
 
-    override suspend fun signInWithGoogle(): AuthResult<User> {
+    override suspend fun signInWithGoogle(activityContext: Any): AuthResult<User> {
         return try {
-            val googleIdTokenCredential = googleAuthService.signInWithGoogle()
+            val googleIdTokenCredential = googleAuthService.signInWithGoogle(activityContext as Context)
             if (googleIdTokenCredential != null) {
                 // TODO: Firebase 인증 및 백엔드 서버 통신 구현
                 val user = UserEntity(

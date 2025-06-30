@@ -7,9 +7,10 @@ interface AuthRepository {
 
     /**
      * Credential Manager를 사용한 Google 로그인
+     * @param activityContext Activity 컨텍스트 (Credential Manager UI 표시용)
      * @return 로그인 결과 (성공 시 User, 실패 시 Error)
      */
-    suspend fun signInWithGoogle(): AuthResult<User>
+    suspend fun signInWithGoogle(activityContext: Any): AuthResult<User>
     
     /**
      * 현재 로그인된 사용자 정보를 가져옵니다.

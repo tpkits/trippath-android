@@ -48,9 +48,10 @@ class GoogleAuthService @Inject constructor(
     
     /**
      * Credential Manager를 사용한 Google 로그인
+     * @param activityContext Activity context (Credential Manager 요구사항)
      * @return Google ID Token Credential 또는 null
      */
-    suspend fun signInWithGoogle(): GoogleIdTokenCredential? {
+    suspend fun signInWithGoogle(activityContext: Context): GoogleIdTokenCredential? {
         return try {
             // Generate nonce for security
             val rawNonce = UUID.randomUUID().toString()
@@ -74,7 +75,7 @@ class GoogleAuthService @Inject constructor(
             // Get credential
             val result = credentialManager.getCredential(
                 request = request,
-                context = context
+                context = activityContext
             )
             
             handleSignInResult(result)

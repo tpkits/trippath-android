@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import android.app.Activity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -94,7 +95,8 @@ fun LoginScreen(
                 if (!viewModel.isLoading) {
                     coroutineScope.launch {
                         try {
-                            viewModel.signInWithGoogle()
+                            val activity = context as Activity
+                            viewModel.signInWithGoogle(activity)
                         } catch (e: GetCredentialCancellationException) {
                             onLoginError("Google 로그인이 취소되었습니다.")
                         } catch (e: NoCredentialException) {

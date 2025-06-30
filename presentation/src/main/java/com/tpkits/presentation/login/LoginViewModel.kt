@@ -1,5 +1,6 @@
 package com.tpkits.presentation.login
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -26,13 +27,14 @@ class LoginViewModel @Inject constructor(
 
     /**
      * Credential Manager를 사용한 Google 로그인
+     * @param activityContext Activity 컨텍스트 (Credential Manager UI 표시용)
      */
-    suspend fun signInWithGoogle() {
+    suspend fun signInWithGoogle(activityContext: Context) {
         isLoading = true
         errorMessage = null
         
         try {
-            when (val result = googleLoginUsecase.signInWithCredentialManager()) {
+            when (val result = googleLoginUsecase.signInWithCredentialManager(activityContext as Any)) {
                 is AuthResult.Success -> {
                     user = result.data
                 }

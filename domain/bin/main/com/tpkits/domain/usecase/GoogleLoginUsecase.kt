@@ -14,9 +14,10 @@ class GoogleLoginUsecase @Inject constructor(
     
     /**
      * Credential Manager를 사용한 Google 로그인
+     * @param activityContext Activity 컨텍스트 (Credential Manager UI 표시용)
      * @return 로그인 결과 (성공 시 User, 실패 시 Error)
      */
-    suspend fun signInWithCredentialManager(): AuthResult<User> {
-        return authRepository.signInWithGoogle()
+    suspend fun signInWithCredentialManager(activityContext: Any): AuthResult<User> {
+        return authRepository.signInWithGoogle(activityContext)
     }
 }
