@@ -15,24 +15,21 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import android.app.Activity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import android.app.Activity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.credentials.exceptions.GetCredentialCancellationException
-import androidx.credentials.exceptions.GetCredentialException
-import androidx.credentials.exceptions.NoCredentialException
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tpkits.domain.model.User
-import kotlinx.coroutines.launch
 
 /**
  * 로그인 화면
@@ -45,19 +42,38 @@ fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
     
-    // ViewModel 상태 관찰
-    LaunchedEffect(viewModel.user) {
-        viewModel.user?.let { user ->
-            onLoginSuccess(user)
+    // StateFlow 관찰
+    val user by viewModel.user.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
+    val isLoading by viewModel.loading.collectAsState()
+    
+    // 사용자 로그인 성공 처리
+    LaunchedEffect(user) {
+        user?.let { loggedInUser ->
+            onLoginSuccess(loggedInUser)
         }
     }
     
-    LaunchedEffect(viewModel.errorMessage) {
-        viewModel.errorMessage?.let { error ->
+    // 에러 메시지 처리
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let { error ->
             onLoginError(error)
             viewModel.clearError()
+        }
+    }
+    
+    // 이벤트 처리
+    LaunchedEffect(Unit) {
+        viewModel.eventFlow.collect { event ->
+            when (event) {
+                is LoginEvent.LoginSuccess -> {
+                    // 성공 이벤트는 user StateFlow로 처리됨
+                }
+                is LoginEvent.LoginError -> {
+                    onLoginError(event.message)
+                }
+            }
         }
     }
     
@@ -92,25 +108,13 @@ fun LoginScreen(
         // Google 로그인 버튼
         GoogleSignInButton(
             onClick = {
-                if (!viewModel.isLoading) {
-                    coroutineScope.launch {
-                        try {
-                            val activity = context as Activity
-                            viewModel.signInWithGoogle(activity)
-                        } catch (e: GetCredentialCancellationException) {
-                            onLoginError("Google 로그인이 취소되었습니다.")
-                        } catch (e: NoCredentialException) {
-                            onLoginError("사용 가능한 Google 계정이 없습니다.")
-                        } catch (e: GetCredentialException) {
-                            onLoginError("Google 로그인 실패: ${e.message}")
-                        } catch (e: Exception) {
-                            onLoginError("로그인 중 오류가 발생했습니다: ${e.message}")
-                        }
-                    }
+                if (!isLoading) {
+                    val activity = context as Activity
+                    viewModel.signInWithGoogle(activity)
                 }
             },
-            enabled = !viewModel.isLoading,
-            text = if (viewModel.isLoading) "로그인 중..." else "Google로 로그인"
+            enabled = !isLoading,
+            text = if (isLoading) "로그인 중..." else "Google로 로그인"
         )
         
         Spacer(modifier = Modifier.height(16.dp))

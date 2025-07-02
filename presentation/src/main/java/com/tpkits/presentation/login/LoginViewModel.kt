@@ -1,58 +1,58 @@
 package com.tpkits.presentation.login
 
 import android.content.Context
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
-import com.tpkits.domain.model.AuthResult
+import com.tpkits.data_resource.DataResource
 import com.tpkits.domain.model.User
 import com.tpkits.domain.usecase.GoogleLoginUsecase
+import com.tpkits.presentation.base.BaseViewModel
+import com.tpkits.presentation.base.ViewEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
+
+sealed class LoginEvent : ViewEvent {
+    data object LoginSuccess : LoginEvent()
+    data class LoginError(val message: String) : LoginEvent()
+}
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val googleLoginUsecase: GoogleLoginUsecase
-) : ViewModel() {
+) : BaseViewModel<LoginEvent>() {
 
-    var isLoading by mutableStateOf(false)
-        private set
-
-    var user by mutableStateOf<User?>(null)
-        private set
-
-    var errorMessage by mutableStateOf<String?>(null)
-        private set
+    private val _user = MutableStateFlow<User?>(null)
+    val user: StateFlow<User?> = _user.asStateFlow()
+    
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
     /**
      * Credential Manager를 사용한 Google 로그인
      * @param activityContext Activity 컨텍스트 (Credential Manager UI 표시용)
      */
-    suspend fun signInWithGoogle(activityContext: Context) {
-        isLoading = true
-        errorMessage = null
+    fun signInWithGoogle(activityContext: Context) = launch {
+        _errorMessage.value = null
         
-        try {
-            when (val result = googleLoginUsecase.signInWithCredentialManager(activityContext as Any)) {
-                is AuthResult.Success -> {
-                    user = result.data
+        googleLoginUsecase.invoke(activityContext as Any)
+            .collectDataResource(
+                onSuccess = { user: User ->
+                    _user.value = user
+                    event(LoginEvent.LoginSuccess)
+                },
+                onError = { throwable: Throwable ->
+                    val message = "Google 로그인 실패: ${throwable.message}"
+                    _errorMessage.value = message
+                    event(LoginEvent.LoginError(message))
                 }
-                is AuthResult.Error -> {
-                    errorMessage = result.message
-                }
-            }
-        } catch (e: Exception) {
-            errorMessage = "Google 로그인 실패: ${e.message}"
-        } finally {
-            isLoading = false
-        }
+            )
     }
 
     /**
      * 에러 메시지를 초기화합니다.
      */
     fun clearError() {
-        errorMessage = null
+        _errorMessage.value = null
     }
 }
