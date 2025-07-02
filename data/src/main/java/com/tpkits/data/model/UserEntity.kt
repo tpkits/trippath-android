@@ -1,5 +1,6 @@
 package com.tpkits.data.model
 
+import com.tpkits.data.DataMapper
 import com.tpkits.domain.model.SnsType
 import com.tpkits.domain.model.User
 import kotlinx.serialization.Serializable
@@ -14,22 +15,21 @@ data class UserEntity(
     val isEmailVerified: Boolean = false,
     val createdAt: Long? = null,
     val lastLoginAt: Long? = null
-)
-
-fun UserEntity.toDomain(): User {
-    return User(
-        id = id,
-        name = name,
-        email = email,
-        profileImageUrl = profileImageUrl,
-        snsType = when (provider) {
-            "google" -> SnsType.GOOGLE
-            "kakao" -> SnsType.KAKAO
-            "apple" -> SnsType.APPLE
-            else -> null
+) : DataMapper<User> {
+    override fun toDomain(): User = User(
+        id,
+        name,
+        email,
+        profileImageUrl,
+        provider?.let { 
+            try {
+                SnsType.valueOf(it.uppercase())
+            } catch (e: IllegalArgumentException) {
+                null
+            }
         },
         isEmailVerified = isEmailVerified,
-        createdAt = createdAt,
-        lastLoginAt = lastLoginAt
+        createdAt,
+        lastLoginAt
     )
-} 
+}

@@ -54,6 +54,7 @@ android {
 
 dependencies {
     implementation(project(":domain"))
+    implementation(project(":data_resource"))
     
     // Android Core
     implementation(libs.androidx.core.ktx)
