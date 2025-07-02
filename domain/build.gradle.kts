@@ -15,6 +15,7 @@ kotlin {
 }
 
 dependencies {
+    implementation(project(":data_resource"))
     implementation("javax.inject:javax.inject:1")
     implementation(libs.kotlinx.coroutines.android)
 }
