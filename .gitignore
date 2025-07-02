@@ -19,3 +19,6 @@ local.properties
 
 # google service
 app/google-services.json
+
+# build
+*/build
