@@ -23,4 +23,5 @@ rootProject.name = "trippath"
 include(":app")
 include(":domain")
 include(":data")
+include(":data_resource")
 include(":presentation")
